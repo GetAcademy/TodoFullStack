@@ -8,34 +8,67 @@
 <body>
     <div id="app"></div>
     <script>
-        const model = {};
+        const model = {
+            inputs: {
+                newTodoItemText: null,
+            }
+        };
 
         getData();
         // view
 
         function updateView() {
-            document.getElementById('app').innerHTML =
-                model.todoItems.map(todoItem => `
-                            <li>
-                                ${todoItem.text}
-                                ${todoItem.done == null
-                    ? `<button onclick="registerDone('${todoItem.id}')">registrer gjort</button>`
-                    : `gjort ${new Date(todoItem.done).toLocaleDateString()}`}
-                            </li >
-            `).join('');
-            }
+            document.getElementById('app').innerHTML = `
 
-            // controller
-            async function getData() {
-                const response = await axios.get('/todo');
-                model.todoItems = response.data;
-                updateView();
-            }
+                    <ul>
+                        ${createTodoItemsHtml()}
+                    </ul>
 
-            async function registerDone(id) {
-                await axios.put(`/todo/${id}`);
-                await getData();
-            }
+                    <input
+                        type="text"
+                        oninput="model.inputs.newTodoItemText=this.value"
+                        value="${model.inputs.newTodoItemText || ''}"
+                    />
+                    <button onclick="createTodoItem()">Lag ny</button>
+                `;
+        }
+
+        function createTodoItemsHtml() {
+            return model.todoItems.map(todoItem => `
+                                <li>
+                                    ${todoItem.text}
+                                    ${todoItem.done == null
+                ? `<button onclick="registerDone('${todoItem.id}')">registrer gjort</button>`
+                : `gjort ${new Date(todoItem.done).toLocaleDateString()}`}
+                                    <button onclick="deleteTodoItem('${todoItem.id}')">x</button>
+                                </li >
+                `).join('');
+        }
+
+        // controller
+        async function getData() {
+            const response = await axios.get('/todo');
+            model.todoItems = response.data;
+            updateView();
+        }
+
+        async function createTodoItem() {
+            const todoItem = {
+                text: model.inputs.newTodoItemText
+            };
+            await axios.post('/todo', todoItem);
+            await getData();
+        }
+
+        async function registerDone(id) {
+            await axios.put(`/todo/${id}`);
+            await getData();
+        }
+
+        async function deleteTodoItem(id) {
+            await axios.delete(`/todo/${id}`);
+            await getData();
+        }
 
     </script>
 </body>

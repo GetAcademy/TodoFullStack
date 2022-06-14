@@ -18,8 +18,15 @@ app.MapPut("/todo/{id}", (Guid id) =>
     var todoItem = todoItems.FirstOrDefault(t => t.Id == id);
     todoItem.Done = DateTime.Now;
 });
-
-
+app.MapPost("/todo", (TodoItem todoItem) =>
+{
+    todoItems.Add(todoItem);
+});
+app.MapDelete("/todo/{id}", (Guid id) =>
+{
+    var index = todoItems.FindIndex(t => t.Id == id);
+    todoItems.RemoveAt(index);
+});
 app.UseStaticFiles();
 app.Run();
 
