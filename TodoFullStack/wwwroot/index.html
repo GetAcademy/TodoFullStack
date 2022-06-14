@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    Hei
+    <script>
+        getData();
+
+        async function getData() {
+            const response = await axios.get('/todos');
+            console.log(response.data);
+        }
+    </script>
+</body>
+</html>
