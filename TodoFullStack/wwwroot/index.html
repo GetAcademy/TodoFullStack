@@ -6,14 +6,37 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    Hei
+    <div id="app"></div>
     <script>
-        getData();
+        const model = {};
 
-        async function getData() {
-            const response = await axios.get('/todos');
-            console.log(response.data);
-        }
+        getData();
+        // view
+
+        function updateView() {
+            document.getElementById('app').innerHTML =
+                model.todoItems.map(todoItem => `
+                            <li>
+                                ${todoItem.text}
+                                ${todoItem.done == null
+                    ? `<button onclick="registerDone('${todoItem.id}')">registrer gjort</button>`
+                    : `gjort ${new Date(todoItem.done).toLocaleDateString()}`}
+                            </li >
+            `).join('');
+            }
+
+            // controller
+            async function getData() {
+                const response = await axios.get('/todo');
+                model.todoItems = response.data;
+                updateView();
+            }
+
+            async function registerDone(id) {
+                await axios.put(`/todo/${id}`);
+                await getData();
+            }
+
     </script>
 </body>
 </html>

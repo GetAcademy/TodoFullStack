@@ -3,19 +3,23 @@ using TodoFullStack.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
-app.MapGet("/todos", () =>
+
+var todoItems = new List<TodoItem>() {
+    new TodoItem{Text = "Lage middag"},
+    new TodoItem{Text = "Trene"}
+};
+
+app.MapGet("/todo", () =>
 {
-    return new[]{
-        new TodoItem
-        {
-            Text = "Lage middag"
-        },
-        new TodoItem
-        {
-            Text = "Trene"
-        },
-    };
+    return todoItems;
 });
+app.MapPut("/todo/{id}", (Guid id) =>
+{
+    var todoItem = todoItems.FirstOrDefault(t => t.Id == id);
+    todoItem.Done = DateTime.Now;
+});
+
+
 app.UseStaticFiles();
 app.Run();
 
